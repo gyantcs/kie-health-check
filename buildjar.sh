@@ -7,6 +7,7 @@ rm cjd.war
 #cd ..
 
 cp pcf-healthcheck-1.jar WEB-INF/lib/.
+cp web.xml WEB-INF/.
 jar cvf cjd.war META-INF/ WEB-INF/ docs scripts
 
 cf push -f manifest-healthcheck.yml
