@@ -1,0 +1,14 @@
+---
+applications:
+- name: kieserver-cjd
+  memory: 1G
+  timeout: 60
+  path: cjd.war
+  health-check-type: http
+  health-check-http-endpoint: /healthcheck
+  buildpack: https://github.com/decelc-pivotal/java-buildpack
+  command: CALCULATED_MEMORY=$($PWD/.java-buildpack/open_jdk_jre/bin/java-buildpack-memory-calculator-3.9.0_RELEASE -totMemory=$MEMORY_LIMIT -stackThreads=300 -loadedClasses=24757 -poolType=metaspace) && JAVA_HOME=$PWD/.java-buildpack/open_jdk_jre JAVA_OPTS="-Djava.io.tmpdir=$TMPDIR $CALCULATED_MEMORY -agentpath:$PWD/.java-buildpack/open_jdk_jre/bin/jvmkill-1.10.0_RELEASE=printHeapHistogram=1 -Djavax.net.ssl.trustStore=$PWD/.java-buildpack/container_certificate_trust_store/truststore.jks -Djavax.net.ssl.trustStorePassword=java-buildpack-trust-store-password -Djava.endorsed.dirs=$PWD/.java-buildpack/tomcat/endorsed -Daccess.logging.enabled=false -Dhttp.port=$PORT" exec $PWD/.java-buildpack/tomcat/bin/catalina.sh run
+  env: 
+     KIE_CONTAINER: "<kie-container container-id=\"hr\"><release-id><artifact-id>guvnor-asset-mgmt-project</artifact-id><group-id>org.guvnor</group-id><version>6.5.0.Final</version></release-id></kie-container>"
+     MVN_SERVER_KEY: 057b1c2cb024af43923c4900d40bcefa6ab5bd55
+     CATALINA_OPTS: "-XX:MaxDirectMemorySize=1G -Dorg.kie.deployment.desc.location=file:/home/vcap/app/.java-buildpack/tomcat/conf/deployment-descriptor.xml -Dbtm.root=/home/vcap/app/.java-buildpack/tomcat -Dbitronix.tm.configuration=/home/vcap/app/.java-buildpack/tomcat/conf/btm-config.properties -Djbpm.tsr.jndi.lookup=java:comp/env/TransactionSynchronizationRegistry -Dorg.jboss.logging.provider=jdk -Djava.security.auth.login.config=/home/vcap/app/.java-buildpack/tomcat/webapps/ROOT/WEB-INF/classes/login.config  -Dorg.jbpm.server.ext.disabled=false -Dorg.drools.server.ext.disabled=false -Dorg.jbpm.cdi.bm=java:comp/env/BeanManager -Dorg.kie.server.persistence.ds=java:comp/env/jdbc/jbpm -Dorg.kie.server.persistence.tm=org.hibernate.service.jta.platform.internal.BitronixJtaPlatform -Dorg.kie.server.id=cjdkieserver -Dkie.maven.settings.custom=/home/vcap/app/.java-buildpack/tomcat/conf/settings.xml"
