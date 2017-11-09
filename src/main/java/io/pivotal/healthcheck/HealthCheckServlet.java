@@ -86,13 +86,11 @@ public class HealthCheckServlet extends HttpServlet {
 				System.out.println("##### container exist ###########################\n");
 				if (!isContainerStarted(d, kcid)){
 					response.sendError(503);
-				} 
-				// TODO: is required to monitor scanner ?
-				/*else {
+				} else {
 					if(!isScannerStarted(d, kcid)){
 						createScanner(kcid, KIE_SCANNER);
 					}
-				} 	*/				
+				} 				
 			}
 
 		} catch (Exception e1) {
@@ -191,9 +189,7 @@ public class HealthCheckServlet extends HttpServlet {
 		System.out.println("######## create container results=r" + responsestring);
 		Document doc = loadXML(responsestring);
 
-		return responsestring;
-		
-		
+		return responsestring;	
 	}
 	
 	
@@ -332,10 +328,6 @@ public class HealthCheckServlet extends HttpServlet {
 	}
 	
 
-	
-	
-	
-	
 	private boolean isScannerStarted(Document document, String kcid) {
 
 		NodeList kieContainers = document.getElementsByTagName("kie-containers");
@@ -364,14 +356,16 @@ public class HealthCheckServlet extends HttpServlet {
 				//loop through container 
 				for(int s= 0; s < innerNodes.getLength(); s++){
 					Node innerNode = innerNodes.item(s);
-					String scannerStatus = innerNode.getAttributes().getNamedItem("status").getNodeValue();
-					System.out.println("##### isScannerStarted check of container and status: " + containerID
-							+ " scanner status: " + scannerStatus);
-					if(scannerStatus!= null && scannerStatus.equalsIgnoreCase("STARTED") 
-							&& containerID != null &&  containerID.equalsIgnoreCase(kcid)){
-						return true;
-						
-					}
+					if("scanner".equalsIgnoreCase(innerNode.getNodeName())){
+						String scannerStatus = innerNode.getAttributes().getNamedItem("status").getNodeValue();
+						System.out.println("##### isScannerStarted check of container and status: " + containerID
+								+ " scanner status: " + scannerStatus);
+						if(scannerStatus!= null && scannerStatus.equalsIgnoreCase("STARTED") 
+								&& containerID != null &&  containerID.equalsIgnoreCase(kcid)){
+							return true;
+							
+						}
+					}	
 				}
 			}
 		}
@@ -379,7 +373,6 @@ public class HealthCheckServlet extends HttpServlet {
 		return false;
 	}
 
-	
 	
 	private String getContainerStatus(Document document, String cid) {
 		String status = null;
